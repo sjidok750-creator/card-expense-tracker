@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import type { Expense, CategoryConfig } from '../types';
 import { exportToFile, importFromFile } from '../utils/fileOperations';
-import { exportToExcel } from '../utils/excel';
+import { exportToExcel, shareExcel } from '../utils/excel';
 
 interface FileManagerCompactProps {
   expenses: Expense[];
@@ -63,6 +63,26 @@ export default function FileManagerCompact({
     } catch (error) {
       setMessage({ type: 'error', text: 'Excel 내보내기에 실패했습니다.' });
       setTimeout(() => setMessage(null), 3000);
+    }
+  };
+
+  const handleShareExcel = async () => {
+    try {
+      const today = new Date().toISOString().split('T')[0];
+      const success = await shareExcel(expenses, `전체지출내역_${today}.xlsx`);
+      if (success) {
+        setMessage({ type: 'success', text: 'Excel 파일을 공유했습니다.' });
+        setTimeout(() => setMessage(null), 3000);
+      }
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Excel 공유에 실패했습니다.';
+      // 공유 기능이 지원되지 않으면 다운로드로 대체
+      if (errorMessage.includes('지원하지 않습니다')) {
+        handleExportAllExcel();
+      } else {
+        setMessage({ type: 'error', text: errorMessage });
+        setTimeout(() => setMessage(null), 3000);
+      }
     }
   };
 
@@ -131,7 +151,7 @@ export default function FileManagerCompact({
             </button>
 
             <button
-              onClick={handleExportAllExcel}
+              onClick={handleShareExcel}
               className="px-4 py-3 rounded-xl font-semibold text-sm transition-colors"
               style={{
                 backgroundColor: '#8B5CF6',
@@ -140,7 +160,7 @@ export default function FileManagerCompact({
               onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#7C3AED')}
               onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#8B5CF6')}
             >
-              📊 Excel 내보내기
+              📤 Excel 공유
             </button>
 
             <button

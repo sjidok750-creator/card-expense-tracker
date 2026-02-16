@@ -83,30 +83,48 @@ export default function ExpenseList({
           이 달의 지출 내역이 없습니다.
         </p>
       ) : (
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b" style={{ borderColor: '#F2F4F6' }}>
-                <th className="text-left py-3 px-3 text-xs font-semibold uppercase" style={{ color: 'var(--text-tertiary)' }}>날짜</th>
-                <th className="text-left py-3 px-3 text-xs font-semibold uppercase" style={{ color: 'var(--text-tertiary)' }}>사용처</th>
-                <th className="text-right py-3 px-3 text-xs font-semibold uppercase" style={{ color: 'var(--text-tertiary)' }}>금액</th>
-                <th className="text-left py-3 px-3 text-xs font-semibold uppercase" style={{ color: 'var(--text-tertiary)' }}>카테고리</th>
-                <th className="py-3 px-3 text-xs font-semibold uppercase w-20" style={{ color: 'var(--text-tertiary)' }}></th>
-              </tr>
-            </thead>
-            <tbody>
-              {filtered.map((e) => (
-                <ExpenseRow
-                  key={e.id}
-                  expense={e}
-                  categories={categories}
-                  onUpdate={onUpdate}
-                  onDelete={onDelete}
-                />
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <>
+          {/* 데스크톱: 테이블 형태 */}
+          <div className="hidden md:block overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b" style={{ borderColor: '#F2F4F6' }}>
+                  <th className="text-left py-3 px-3 text-xs font-semibold uppercase" style={{ color: 'var(--text-tertiary)' }}>날짜</th>
+                  <th className="text-left py-3 px-3 text-xs font-semibold uppercase" style={{ color: 'var(--text-tertiary)' }}>사용처</th>
+                  <th className="text-right py-3 px-3 text-xs font-semibold uppercase" style={{ color: 'var(--text-tertiary)' }}>금액</th>
+                  <th className="text-left py-3 px-3 text-xs font-semibold uppercase" style={{ color: 'var(--text-tertiary)' }}>카테고리</th>
+                  <th className="py-3 px-3 text-xs font-semibold uppercase w-20" style={{ color: 'var(--text-tertiary)' }}></th>
+                </tr>
+              </thead>
+              <tbody>
+                {filtered.map((e) => (
+                  <ExpenseRow
+                    key={e.id}
+                    expense={e}
+                    categories={categories}
+                    onUpdate={onUpdate}
+                    onDelete={onDelete}
+                    mode="table"
+                  />
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* 모바일: 카드 형태 */}
+          <div className="md:hidden space-y-3">
+            {filtered.map((e) => (
+              <ExpenseRow
+                key={e.id}
+                expense={e}
+                categories={categories}
+                onUpdate={onUpdate}
+                onDelete={onDelete}
+                mode="card"
+              />
+            ))}
+          </div>
+        </>
       )}
     </div>
   );
