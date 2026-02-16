@@ -1,9 +1,23 @@
 @import "tailwindcss";
 
+:root {
+  --toss-blue: #3182F6;
+  --text-primary: #191F28;
+  --text-secondary: #4E5968;
+  --text-tertiary: #8B95A1;
+  --bg-primary: #FFFFFF;
+  --bg-secondary: #F2F4F6;
+}
+
 body {
   margin: 0;
   min-height: 100vh;
-  background-color: #f9fafb;
-  color: #111827;
+  background-color: #F2F4F6;
+  color: #191F28;
   font-family: system-ui, -apple-system, sans-serif;
+}
+
+/* Smooth transitions for all interactive elements */
+button, a, input, select {
+  transition: all 0.2s ease;
 }

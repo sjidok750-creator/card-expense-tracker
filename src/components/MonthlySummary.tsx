@@ -15,17 +15,23 @@ export default function MonthlySummary({ summary, categories }: MonthlySummaryPr
 
   if (total === 0) {
     return (
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
-        <h3 className="text-lg font-semibold text-gray-800 mb-3">카테고리별 합계</h3>
-        <p className="text-center py-4 text-gray-400 text-sm">데이터가 없습니다.</p>
+      <div className="bg-white rounded-2xl p-6">
+        <h3 className="text-xl font-bold mb-4" style={{ color: 'var(--text-primary)' }}>
+          카테고리별 합계
+        </h3>
+        <p className="text-center py-8 text-sm" style={{ color: 'var(--text-tertiary)' }}>
+          데이터가 없습니다.
+        </p>
       </div>
     );
   }
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
-      <h3 className="text-lg font-semibold text-gray-800 mb-3">카테고리별 합계</h3>
-      <div className="space-y-2">
+    <div className="bg-white rounded-2xl p-6">
+      <h3 className="text-xl font-bold mb-4" style={{ color: 'var(--text-primary)' }}>
+        카테고리별 합계
+      </h3>
+      <div className="space-y-3">
         {sorted.map((cat) => {
           const amount = summary[cat.key];
           const pct = ((amount / total) * 100).toFixed(1);
@@ -35,8 +41,10 @@ export default function MonthlySummary({ summary, categories }: MonthlySummaryPr
                 className="inline-block w-3 h-3 rounded-full shrink-0"
                 style={{ backgroundColor: cat.color }}
               />
-              <span className="text-sm text-gray-700 w-20">{cat.key}</span>
-              <div className="flex-1 bg-gray-100 rounded-full h-2 overflow-hidden">
+              <span className="text-sm font-semibold w-20" style={{ color: 'var(--text-secondary)' }}>
+                {cat.key}
+              </span>
+              <div className="flex-1 rounded-full h-4 overflow-hidden" style={{ backgroundColor: 'var(--bg-secondary)' }}>
                 <div
                   className="h-full rounded-full transition-all"
                   style={{
@@ -45,17 +53,21 @@ export default function MonthlySummary({ summary, categories }: MonthlySummaryPr
                   }}
                 />
               </div>
-              <span className="text-sm font-mono text-gray-800 w-28 text-right">
+              <span className="text-base font-bold font-mono w-28 text-right" style={{ color: 'var(--text-primary)' }}>
                 {formatAmount(amount)}
               </span>
-              <span className="text-xs text-gray-500 w-12 text-right">{pct}%</span>
+              <span className="text-sm font-medium w-12 text-right" style={{ color: 'var(--text-tertiary)' }}>
+                {pct}%
+              </span>
             </div>
           );
         })}
       </div>
-      <div className="mt-4 pt-3 border-t border-gray-200 flex justify-between items-center">
-        <span className="text-sm font-semibold text-gray-800">총 합계</span>
-        <span className="text-sm font-semibold font-mono text-gray-800">{formatAmount(total)}</span>
+      <div className="mt-5 pt-4 flex justify-between items-center" style={{ borderTop: '1px solid var(--bg-secondary)' }}>
+        <span className="text-base font-bold" style={{ color: 'var(--text-secondary)' }}>총 합계</span>
+        <span className="text-3xl font-bold font-mono" style={{ color: 'var(--text-primary)' }}>
+          {formatAmount(total)}
+        </span>
       </div>
     </div>
   );

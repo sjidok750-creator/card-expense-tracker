@@ -20,9 +20,13 @@ export default function BarChartCard({ data, categories }: BarChartCardProps) {
 
   if (!hasData) {
     return (
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
-        <h3 className="text-lg font-semibold text-gray-800 mb-3">월별 추이 (6개월)</h3>
-        <p className="text-center py-8 text-gray-400 text-sm">데이터가 없습니다.</p>
+      <div className="bg-white rounded-2xl p-6">
+        <h3 className="text-xl font-bold mb-4" style={{ color: 'var(--text-primary)' }}>
+          월별 추이 (6개월)
+        </h3>
+        <p className="text-center py-12 text-sm" style={{ color: 'var(--text-tertiary)' }}>
+          데이터가 없습니다.
+        </p>
       </div>
     );
   }
@@ -32,19 +36,21 @@ export default function BarChartCard({ data, categories }: BarChartCardProps) {
   );
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
-      <h3 className="text-lg font-semibold text-gray-800 mb-3">월별 추이 (6개월)</h3>
+    <div className="bg-white rounded-2xl p-6">
+      <h3 className="text-xl font-bold mb-4" style={{ color: 'var(--text-primary)' }}>
+        월별 추이 (6개월)
+      </h3>
       <ResponsiveContainer width="100%" height={300}>
         <BarChart data={data}>
-          <CartesianGrid strokeDasharray="3 3" vertical={false} />
+          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F2F4F6" />
           <XAxis
             dataKey="month"
             tickFormatter={(m: string) => getMonthLabel(m).replace(/^\d+년 /, '')}
-            tick={{ fontSize: 12 }}
+            tick={{ fontSize: 13, fill: 'var(--text-secondary)' }}
           />
           <YAxis
             tickFormatter={(v: number) => `${(v / 10000).toFixed(0)}만`}
-            tick={{ fontSize: 12 }}
+            tick={{ fontSize: 13, fill: 'var(--text-secondary)' }}
           />
           <Tooltip
             formatter={(value, name) => [formatAmount(value as number), name as string]}
@@ -56,6 +62,7 @@ export default function BarChartCard({ data, categories }: BarChartCardProps) {
               dataKey={cat.key}
               stackId="a"
               fill={cat.color}
+              radius={[4, 4, 0, 0]}
             />
           ))}
         </BarChart>

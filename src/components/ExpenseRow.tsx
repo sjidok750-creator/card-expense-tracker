@@ -35,38 +35,59 @@ export default function ExpenseRow({ expense, categories, onUpdate, onDelete }: 
 
   if (editing) {
     return (
-      <tr className="border-b border-gray-100">
-        <td className="py-2 px-2 text-sm">{expense.date}</td>
-        <td className="py-2 px-2">
+      <tr className="border-b" style={{ borderColor: '#F2F4F6' }}>
+        <td className="py-3 px-3 text-sm" style={{ color: 'var(--text-secondary)' }}>{expense.date}</td>
+        <td className="py-3 px-3">
           <input
             value={editMerchant}
             onChange={(e) => setEditMerchant(e.target.value)}
-            className="border border-gray-300 rounded px-2 py-1 text-sm w-full"
+            className="border rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2"
+            style={{ borderColor: '#E5E8EB' }}
+            onFocus={(e) => (e.target.style.borderColor = 'var(--toss-blue)')}
+            onBlur={(e) => (e.target.style.borderColor = '#E5E8EB')}
           />
         </td>
-        <td className="py-2 px-2">
+        <td className="py-3 px-3">
           <input
             type="number"
             value={editAmount}
             onChange={(e) => setEditAmount(e.target.value)}
-            className="border border-gray-300 rounded px-2 py-1 text-sm w-24"
+            className="border rounded-lg px-3 py-2 text-sm w-28 text-right font-bold focus:outline-none focus:ring-2"
+            style={{ borderColor: '#E5E8EB' }}
+            onFocus={(e) => (e.target.style.borderColor = 'var(--toss-blue)')}
+            onBlur={(e) => (e.target.style.borderColor = '#E5E8EB')}
           />
         </td>
-        <td className="py-2 px-2">
+        <td className="py-3 px-3">
           <select
             value={editCategory}
             onChange={(e) => setEditCategory(e.target.value as CategoryKey)}
-            className="border border-gray-300 rounded px-2 py-1 text-sm"
+            className="border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2"
+            style={{ borderColor: '#E5E8EB' }}
+            onFocus={(e) => (e.target.style.borderColor = 'var(--toss-blue)')}
+            onBlur={(e) => (e.target.style.borderColor = '#E5E8EB')}
           >
             {categories.map((c) => (
               <option key={c.key} value={c.key}>{c.key}</option>
             ))}
           </select>
         </td>
-        <td className="py-2 px-2 text-sm">
-          <div className="flex gap-1">
-            <button onClick={handleSave} className="text-blue-600 hover:text-blue-800 text-xs font-medium">저장</button>
-            <button onClick={() => setEditing(false)} className="text-gray-500 hover:text-gray-700 text-xs font-medium">취소</button>
+        <td className="py-3 px-3 text-sm">
+          <div className="flex gap-2">
+            <button
+              onClick={handleSave}
+              className="text-xs font-semibold transition-colors"
+              style={{ color: 'var(--toss-blue)' }}
+            >
+              저장
+            </button>
+            <button
+              onClick={() => setEditing(false)}
+              className="text-xs font-semibold transition-colors"
+              style={{ color: 'var(--text-tertiary)' }}
+            >
+              취소
+            </button>
           </div>
         </td>
       </tr>
@@ -74,27 +95,50 @@ export default function ExpenseRow({ expense, categories, onUpdate, onDelete }: 
   }
 
   return (
-    <tr className="border-b border-gray-100 hover:bg-gray-50">
-      <td className="py-2 px-2 text-sm text-gray-600">{expense.date}</td>
-      <td className="py-2 px-2 text-sm font-medium text-gray-800">
+    <tr
+      className="border-b transition-colors"
+      style={{ borderColor: '#F2F4F6' }}
+      onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#F9FAFB')}
+      onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
+    >
+      <td className="py-3 px-3 text-sm" style={{ color: 'var(--text-secondary)' }}>{expense.date}</td>
+      <td className="py-3 px-3 text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
         {expense.merchant}
         {expense.memo && (
-          <span className="ml-2 text-xs text-gray-400">({expense.memo})</span>
+          <span className="ml-2 text-xs font-normal" style={{ color: 'var(--text-tertiary)' }}>({expense.memo})</span>
         )}
       </td>
-      <td className="py-2 px-2 text-sm text-right font-mono">{formatAmount(expense.amount)}</td>
-      <td className="py-2 px-2">
+      <td className="py-3 px-3 text-lg text-right font-bold font-mono" style={{ color: 'var(--text-primary)' }}>
+        {formatAmount(expense.amount)}
+      </td>
+      <td className="py-3 px-3">
         <span
-          className="inline-block px-2 py-0.5 rounded-full text-white text-xs font-medium"
+          className="inline-block px-3 py-1 rounded-full text-white text-xs font-semibold"
           style={{ backgroundColor: catConfig?.color }}
         >
           {expense.category}
         </span>
       </td>
-      <td className="py-2 px-2 text-sm">
-        <div className="flex gap-1">
-          <button onClick={() => setEditing(true)} className="text-gray-500 hover:text-blue-600 text-xs">수정</button>
-          <button onClick={handleDelete} className="text-gray-500 hover:text-red-600 text-xs">삭제</button>
+      <td className="py-3 px-3 text-sm">
+        <div className="flex gap-2">
+          <button
+            onClick={() => setEditing(true)}
+            className="text-xs font-medium transition-colors"
+            style={{ color: 'var(--text-tertiary)' }}
+            onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--toss-blue)')}
+            onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--text-tertiary)')}
+          >
+            수정
+          </button>
+          <button
+            onClick={handleDelete}
+            className="text-xs font-medium transition-colors"
+            style={{ color: 'var(--text-tertiary)' }}
+            onMouseEnter={(e) => (e.currentTarget.style.color = '#EF4444')}
+            onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--text-tertiary)')}
+          >
+            삭제
+          </button>
         </div>
       </td>
     </tr>

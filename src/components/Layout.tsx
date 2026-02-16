@@ -14,22 +14,26 @@ const tabs: { key: TabKey; label: string }[] = [
 
 export default function Layout({ activeTab, onTabChange, children }: LayoutProps) {
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
-        <div className="max-w-4xl mx-auto px-4">
-          <h1 className="text-xl font-bold py-3 text-gray-800">
+    <div className="min-h-screen" style={{ backgroundColor: 'var(--bg-secondary)' }}>
+      <header className="bg-white sticky top-0 z-10">
+        <div className="max-w-4xl mx-auto px-6 py-8">
+          <h1 className="text-3xl font-extrabold mb-6" style={{ color: 'var(--text-primary)' }}>
             카드 지출 관리
           </h1>
-          <nav className="flex gap-1">
+          <nav className="flex gap-8 border-b border-gray-200">
             {tabs.map((tab) => (
               <button
                 key={tab.key}
                 onClick={() => onTabChange(tab.key)}
-                className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-colors ${
+                className={`pb-3 text-base font-medium transition-all ${
                   activeTab === tab.key
-                    ? 'bg-blue-500 text-white'
-                    : 'text-gray-600 hover:bg-gray-100'
+                    ? 'font-bold border-b-2'
+                    : 'font-medium'
                 }`}
+                style={{
+                  color: activeTab === tab.key ? 'var(--toss-blue)' : 'var(--text-secondary)',
+                  borderColor: activeTab === tab.key ? 'var(--toss-blue)' : 'transparent'
+                }}
               >
                 {tab.label}
               </button>
@@ -37,7 +41,7 @@ export default function Layout({ activeTab, onTabChange, children }: LayoutProps
           </nav>
         </div>
       </header>
-      <main className="max-w-4xl mx-auto px-4 py-6">{children}</main>
+      <main className="max-w-4xl mx-auto px-6 py-8">{children}</main>
     </div>
   );
 }

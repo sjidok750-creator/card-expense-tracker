@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Icon Generator</title>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <script>
+        function generateIcon(size, filename) {
+            const canvas = document.getElementById('canvas');
+            canvas.width = size;
+            canvas.height = size;
+            const ctx = canvas.getContext('2d');
+            
+            // Background
+            ctx.fillStyle = '#3b82f6';
+            ctx.fillRect(0, 0, size, size);
+            
+            // Card icon
+            const cardWidth = size * 0.6;
+            const cardHeight = size * 0.4;
+            const cardX = (size - cardWidth) / 2;
+            const cardY = (size - cardHeight) / 2;
+            
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(cardX, cardY, cardWidth, cardHeight);
+            
+            // Card stripe
+            ctx.fillStyle = '#1e40af';
+            ctx.fillRect(cardX, cardY + cardHeight * 0.2, cardWidth, cardHeight * 0.15);
+            
+            // Download
+            canvas.toBlob(blob => {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                a.click();
+            });
+        }
+        
+        // Generate all sizes
+        setTimeout(() => generateIcon(192, 'pwa-192x192.png'), 100);
+        setTimeout(() => generateIcon(512, 'pwa-512x512.png'), 200);
+        setTimeout(() => generateIcon(180, 'apple-touch-icon.png'), 300);
+        setTimeout(() => generateIcon(32, 'favicon-32x32.png'), 400);
+        setTimeout(() => generateIcon(16, 'favicon-16x16.png'), 500);
+    </script>
+</body>
+</html>

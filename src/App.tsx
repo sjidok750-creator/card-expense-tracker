@@ -9,7 +9,9 @@ import ExpenseForm from './components/ExpenseForm';
 import ExpenseList from './components/ExpenseList';
 import Dashboard from './components/Dashboard';
 import CategoryManager from './components/CategoryManager';
-import FileManager from './components/FileManager';
+import FileManagerCompact from './components/FileManagerCompact';
+import { UpdatePrompt } from './components/UpdatePrompt';
+import { IOSInstallGuide } from './components/IOSInstallGuide';
 
 function App() {
   const [activeTab, setActiveTab] = useState<TabKey>('input');
@@ -44,47 +46,51 @@ function App() {
   };
 
   return (
-    <Layout activeTab={activeTab} onTabChange={setActiveTab}>
-      {activeTab === 'input' && (
-        <>
-          <ExpenseForm categories={categories} onAdd={addExpense} />
-          <ExpenseList
-            expenses={expenses}
+    <>
+      <Layout activeTab={activeTab} onTabChange={setActiveTab}>
+        {activeTab === 'input' && (
+          <>
+            <ExpenseForm categories={categories} onAdd={addExpense} />
+            <ExpenseList
+              expenses={expenses}
+              month={month}
+              onMonthChange={setMonth}
+              categories={categories}
+              onUpdate={updateExpense}
+              onDelete={deleteExpense}
+            />
+            <FileManagerCompact
+              expenses={expenses}
+              categories={categories}
+              onImport={handleImportData}
+              onClear={handleClearData}
+            />
+          </>
+        )}
+
+        {activeTab === 'dashboard' && (
+          <Dashboard
             month={month}
             onMonthChange={setMonth}
+            summary={summary}
+            barChartData={barChartData as Array<{ month: string; total: number } & Record<CategoryKey, number>>}
             categories={categories}
-            onUpdate={updateExpense}
-            onDelete={deleteExpense}
           />
-        </>
-      )}
+        )}
 
-      {activeTab === 'dashboard' && (
-        <Dashboard
-          month={month}
-          onMonthChange={setMonth}
-          summary={summary}
-          barChartData={barChartData as Array<{ month: string; total: number } & Record<CategoryKey, number>>}
-          categories={categories}
-        />
-      )}
-
-      {activeTab === 'settings' && (
-        <div className="space-y-4">
-          <FileManager
-            expenses={expenses}
-            categories={categories}
-            onImport={handleImportData}
-            onClear={handleClearData}
-          />
+        {activeTab === 'settings' && (
           <CategoryManager
             categories={categories}
             onUpdate={setCategories}
             onReset={resetCategories}
           />
-        </div>
-      )}
-    </Layout>
+        )}
+      </Layout>
+
+      {/* PWA Components */}
+      <UpdatePrompt />
+      <IOSInstallGuide />
+    </>
   );
 }
 

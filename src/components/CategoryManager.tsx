@@ -39,12 +39,17 @@ export default function CategoryManager({ categories, onUpdate, onReset }: Categ
   }
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-gray-800">카테고리 키워드 관리</h2>
+        <h2 className="text-2xl font-extrabold" style={{ color: 'var(--text-primary)' }}>
+          카테고리 키워드 관리
+        </h2>
         <button
           onClick={handleReset}
-          className="text-sm text-red-600 hover:text-red-800 font-medium"
+          className="text-sm font-semibold transition-colors"
+          style={{ color: '#EF4444' }}
+          onMouseEnter={(e) => (e.currentTarget.style.color = '#DC2626')}
+          onMouseLeave={(e) => (e.currentTarget.style.color = '#EF4444')}
         >
           기본값으로 초기화
         </button>
@@ -53,30 +58,41 @@ export default function CategoryManager({ categories, onUpdate, onReset }: Categ
       {categories.map((cat) => (
         <div
           key={cat.key}
-          className="bg-white rounded-xl shadow-sm border border-gray-200 p-4"
+          className="bg-white rounded-2xl p-5"
         >
-          <div className="flex items-center gap-2 mb-3">
+          <div className="flex items-center gap-3 mb-4">
             <span
-              className="w-3 h-3 rounded-full"
+              className="w-4 h-4 rounded-full"
               style={{ backgroundColor: cat.color }}
             />
-            <h3 className="font-medium text-gray-800">{cat.key}</h3>
-            <span className="text-xs text-gray-400">({cat.keywords.length}개)</span>
+            <h3 className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>
+              {cat.key}
+            </h3>
+            <span className="text-xs font-semibold" style={{ color: 'var(--text-tertiary)' }}>
+              ({cat.keywords.length}개)
+            </span>
           </div>
 
-          <div className="flex flex-wrap gap-2 mb-3">
+          <div className="flex flex-wrap gap-2 mb-4">
             {cat.keywords.length === 0 && (
-              <span className="text-xs text-gray-400">키워드 없음</span>
+              <span className="text-sm" style={{ color: 'var(--text-tertiary)' }}>
+                키워드 없음
+              </span>
             )}
             {cat.keywords.map((kw) => (
               <span
                 key={kw}
-                className="inline-flex items-center gap-1 px-2.5 py-1 bg-gray-100 text-gray-700 rounded-full text-xs"
+                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold"
+                style={{
+                  backgroundColor: 'var(--bg-secondary)',
+                  color: 'var(--text-secondary)'
+                }}
               >
                 {kw}
                 <button
                   onClick={() => removeKeyword(cat.key, kw)}
-                  className="text-gray-400 hover:text-red-500 font-bold ml-0.5"
+                  className="hover:text-red-500 font-bold transition-colors"
+                  style={{ color: 'var(--text-tertiary)' }}
                 >
                   &times;
                 </button>
@@ -99,11 +115,17 @@ export default function CategoryManager({ categories, onUpdate, onReset }: Categ
                   }
                 }}
                 placeholder="새 키워드 입력"
-                className="flex-1 border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="flex-1 border rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2"
+                style={{ borderColor: '#E5E8EB' }}
+                onFocus={(e) => (e.target.style.borderColor = 'var(--toss-blue)')}
+                onBlur={(e) => (e.target.style.borderColor = '#E5E8EB')}
               />
               <button
                 onClick={() => addKeyword(cat.key)}
-                className="px-3 py-1.5 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-sm font-medium transition-colors"
+                className="px-5 py-2.5 text-white rounded-xl text-sm font-semibold transition-colors"
+                style={{ backgroundColor: 'var(--toss-blue)' }}
+                onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#2968CC')}
+                onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'var(--toss-blue)')}
               >
                 추가
               </button>

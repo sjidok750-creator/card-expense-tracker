@@ -9,7 +9,13 @@ export default function MonthPicker({ value, onChange }: MonthPickerProps) {
       type="month"
       value={value}
       onChange={(e) => onChange(e.target.value)}
-      className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+      className="border rounded-xl px-4 py-2 text-sm font-semibold focus:outline-none focus:ring-2"
+      style={{
+        borderColor: '#E5E8EB',
+        color: 'var(--text-secondary)'
+      }}
+      onFocus={(e) => (e.target.style.borderColor = 'var(--toss-blue)')}
+      onBlur={(e) => (e.target.style.borderColor = '#E5E8EB')}
     />
   );
 }
