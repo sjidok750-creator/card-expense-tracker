@@ -1,4 +1,3 @@
-import { useRef } from 'react';
 import type { TabKey } from '../types';
 
 interface LayoutProps {
@@ -13,26 +12,7 @@ const tabs: { key: TabKey; label: string }[] = [
   { key: 'settings', label: '카테고리 설정' },
 ];
 
-const tabOrder: TabKey[] = ['input', 'dashboard', 'settings'];
-
 export default function Layout({ activeTab, onTabChange, children }: LayoutProps) {
-  const touchStartX = useRef(0);
-
-  function handleTouchStart(e: React.TouchEvent) {
-    touchStartX.current = e.touches[0].clientX;
-  }
-
-  function handleTouchEnd(e: React.TouchEvent) {
-    const diff = touchStartX.current - e.changedTouches[0].clientX;
-    if (Math.abs(diff) < 60) return;
-    const currentIndex = tabOrder.indexOf(activeTab);
-    if (diff > 0 && currentIndex < tabOrder.length - 1) {
-      onTabChange(tabOrder[currentIndex + 1]);
-    } else if (diff < 0 && currentIndex > 0) {
-      onTabChange(tabOrder[currentIndex - 1]);
-    }
-  }
-
   return (
     <div className="min-h-screen" style={{ backgroundColor: 'var(--bg-secondary)' }}>
       <header className="bg-white sticky top-0 z-10">
@@ -61,13 +41,7 @@ export default function Layout({ activeTab, onTabChange, children }: LayoutProps
           </nav>
         </div>
       </header>
-      <main
-        className="max-w-4xl mx-auto px-6 py-8"
-        onTouchStart={handleTouchStart}
-        onTouchEnd={handleTouchEnd}
-      >
-        {children}
-      </main>
+      <main className="max-w-4xl mx-auto px-6 py-8">{children}</main>
     </div>
   );
 }
