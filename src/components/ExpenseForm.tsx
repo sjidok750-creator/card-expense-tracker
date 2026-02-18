@@ -60,7 +60,7 @@ export default function ExpenseForm({ categories, onAdd }: ExpenseFormProps) {
               value={merchant}
               onChange={(e) => setMerchant(e.target.value)}
               placeholder="예: 스타벅스 강남점"
-              className="w-full border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2"
+              className="w-full h-12 border rounded-xl px-4 text-sm focus:outline-none focus:ring-2"
               style={{ borderColor: '#E5E8EB' }}
               onFocus={(e) => (e.target.style.borderColor = 'var(--toss-blue)')}
               onBlur={(e) => (e.target.style.borderColor = '#E5E8EB')}
@@ -89,7 +89,7 @@ export default function ExpenseForm({ categories, onAdd }: ExpenseFormProps) {
               onChange={(e) => setAmount(e.target.value)}
               placeholder="0"
               min="1"
-              className="w-full border rounded-xl px-4 py-3 text-sm font-bold text-right focus:outline-none focus:ring-2"
+              className="w-full h-12 border rounded-xl px-4 text-sm font-bold text-right focus:outline-none focus:ring-2"
               style={{ borderColor: '#E5E8EB', color: 'var(--text-primary)' }}
               onFocus={(e) => (e.target.style.borderColor = 'var(--toss-blue)')}
               onBlur={(e) => (e.target.style.borderColor = '#E5E8EB')}
@@ -105,7 +105,7 @@ export default function ExpenseForm({ categories, onAdd }: ExpenseFormProps) {
               type="date"
               value={date}
               onChange={(e) => setDate(e.target.value)}
-              className="w-full border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2"
+              className="w-full h-12 border rounded-xl px-4 text-sm focus:outline-none focus:ring-2"
               style={{ borderColor: '#E5E8EB' }}
               onFocus={(e) => (e.target.style.borderColor = 'var(--toss-blue)')}
               onBlur={(e) => (e.target.style.borderColor = '#E5E8EB')}
@@ -119,7 +119,7 @@ export default function ExpenseForm({ categories, onAdd }: ExpenseFormProps) {
             <select
               value={manualCategory}
               onChange={(e) => setManualCategory(e.target.value as CategoryKey | '')}
-              className="w-full border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2"
+              className="w-full h-12 border rounded-xl px-4 text-sm focus:outline-none focus:ring-2"
               style={{ borderColor: '#E5E8EB' }}
               onFocus={(e) => (e.target.style.borderColor = 'var(--toss-blue)')}
               onBlur={(e) => (e.target.style.borderColor = '#E5E8EB')}
@@ -143,7 +143,7 @@ export default function ExpenseForm({ categories, onAdd }: ExpenseFormProps) {
             value={memo}
             onChange={(e) => setMemo(e.target.value)}
             placeholder="간단한 메모"
-            className="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2"
+            className="w-full h-12 border rounded-xl px-4 text-sm focus:outline-none focus:ring-2"
             style={{ borderColor: '#E5E8EB' }}
             onFocus={(e) => (e.target.style.borderColor = 'var(--toss-blue)')}
             onBlur={(e) => (e.target.style.borderColor = '#E5E8EB')}

@@ -153,7 +153,7 @@ export default function ReceiptScanner({ categories, onAdd, onClose }: ReceiptSc
         <input
           ref={galleryInputRef}
           type="file"
-          accept="image/*"
+          accept="image/jpeg,image/png,image/gif,image/webp,image/heic,image/heif"
           onChange={handleFileChange}
           className="hidden"
         />
