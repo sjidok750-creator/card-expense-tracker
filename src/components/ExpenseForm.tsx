@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import type { CategoryConfig, CategoryKey, Expense } from '../types';
 import { categorize } from '../utils/categorize';
 import { getToday } from '../utils/format';
@@ -16,10 +16,11 @@ export default function ExpenseForm({ categories, onAdd }: ExpenseFormProps) {
   const [manualCategory, setManualCategory] = useState<CategoryKey | ''>('');
   const [memo, setMemo] = useState('');
   const [showScanner, setShowScanner] = useState(false);
+  const [scanImage, setScanImage] = useState<{ base64: string; url: string; mediaType: string } | null>(null);
+  const scanFileRef = useRef<HTMLInputElement>(null);
 
   const autoCategory = merchant ? categorize(merchant, categories) : null;
   const finalCategory = manualCategory || autoCategory || '기타';
-
   const matchedConfig = categories.find((c) => c.key === finalCategory);
 
   function handleSubmit(e: React.FormEvent) {
@@ -43,8 +44,43 @@ export default function ExpenseForm({ categories, onAdd }: ExpenseFormProps) {
     setMemo('');
   }
 
+  function handleScanFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const url = URL.createObjectURL(file);
+    const mt = file.type || 'image/jpeg';
+
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+      const result = evt.target?.result as string;
+      const base64 = result.split(',')[1];
+      setScanImage({ base64, url, mediaType: mt });
+      setShowScanner(true);
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function handleScannerClose() {
+    setShowScanner(false);
+    setScanImage(null);
+    if (scanFileRef.current) scanFileRef.current.value = '';
+  }
+
+  const inputClass = 'w-full border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2';
+  const inputBorder = '#E5E8EB';
+
   return (
     <>
+      {/* 스캔용 숨겨진 파일 입력 - 버튼 클릭 시 바로 OS 파일 선택창 트리거 */}
+      <input
+        ref={scanFileRef}
+        type="file"
+        accept="image/*"
+        onChange={handleScanFileChange}
+        className="hidden"
+      />
+
       <form onSubmit={handleSubmit} className="bg-white rounded-2xl p-4 space-y-4">
         <h2 className="text-2xl font-extrabold" style={{ color: 'var(--text-primary)' }}>
           지출 입력
@@ -60,10 +96,10 @@ export default function ExpenseForm({ categories, onAdd }: ExpenseFormProps) {
               value={merchant}
               onChange={(e) => setMerchant(e.target.value)}
               placeholder="예: 스타벅스 강남점"
-              className="w-full h-12 border rounded-xl px-4 text-sm focus:outline-none focus:ring-2"
-              style={{ borderColor: '#E5E8EB' }}
+              className={inputClass}
+              style={{ borderColor: inputBorder }}
               onFocus={(e) => (e.target.style.borderColor = 'var(--toss-blue)')}
-              onBlur={(e) => (e.target.style.borderColor = '#E5E8EB')}
+              onBlur={(e) => (e.target.style.borderColor = inputBorder)}
               required
             />
             {merchant && autoCategory && !manualCategory && (
@@ -89,15 +125,15 @@ export default function ExpenseForm({ categories, onAdd }: ExpenseFormProps) {
               onChange={(e) => setAmount(e.target.value)}
               placeholder="0"
               min="1"
-              className="w-full h-12 border rounded-xl px-4 text-sm font-bold text-right focus:outline-none focus:ring-2"
-              style={{ borderColor: '#E5E8EB', color: 'var(--text-primary)' }}
+              className={`${inputClass} font-bold text-right`}
+              style={{ borderColor: inputBorder, color: 'var(--text-primary)' }}
               onFocus={(e) => (e.target.style.borderColor = 'var(--toss-blue)')}
-              onBlur={(e) => (e.target.style.borderColor = '#E5E8EB')}
+              onBlur={(e) => (e.target.style.borderColor = inputBorder)}
               required
             />
           </div>
 
-          <div className="w-full overflow-hidden">
+          <div>
             <label className="block text-sm font-semibold mb-2" style={{ color: 'var(--text-secondary)' }}>
               날짜
             </label>
@@ -105,10 +141,10 @@ export default function ExpenseForm({ categories, onAdd }: ExpenseFormProps) {
               type="date"
               value={date}
               onChange={(e) => setDate(e.target.value)}
-              className="w-full h-12 border rounded-xl px-4 text-sm focus:outline-none focus:ring-2"
-              style={{ borderColor: '#E5E8EB', boxSizing: 'border-box', maxWidth: '100%' }}
+              className={inputClass}
+              style={{ borderColor: inputBorder, boxSizing: 'border-box', maxWidth: '100%' }}
               onFocus={(e) => (e.target.style.borderColor = 'var(--toss-blue)')}
-              onBlur={(e) => (e.target.style.borderColor = '#E5E8EB')}
+              onBlur={(e) => (e.target.style.borderColor = inputBorder)}
             />
           </div>
 
@@ -119,10 +155,10 @@ export default function ExpenseForm({ categories, onAdd }: ExpenseFormProps) {
             <select
               value={manualCategory}
               onChange={(e) => setManualCategory(e.target.value as CategoryKey | '')}
-              className="w-full h-12 border rounded-xl px-4 text-sm focus:outline-none focus:ring-2"
-              style={{ borderColor: '#E5E8EB' }}
+              className={inputClass}
+              style={{ borderColor: inputBorder }}
               onFocus={(e) => (e.target.style.borderColor = 'var(--toss-blue)')}
-              onBlur={(e) => (e.target.style.borderColor = '#E5E8EB')}
+              onBlur={(e) => (e.target.style.borderColor = inputBorder)}
             >
               <option value="">자동 분류</option>
               {categories.map((cat) => (
@@ -132,22 +168,22 @@ export default function ExpenseForm({ categories, onAdd }: ExpenseFormProps) {
               ))}
             </select>
           </div>
-        </div>
 
-        <div>
-          <label className="block text-sm font-semibold mb-2" style={{ color: 'var(--text-secondary)' }}>
-            메모 (선택)
-          </label>
-          <input
-            type="text"
-            value={memo}
-            onChange={(e) => setMemo(e.target.value)}
-            placeholder="간단한 메모"
-            className="w-full h-12 border rounded-xl px-4 text-sm focus:outline-none focus:ring-2"
-            style={{ borderColor: '#E5E8EB' }}
-            onFocus={(e) => (e.target.style.borderColor = 'var(--toss-blue)')}
-            onBlur={(e) => (e.target.style.borderColor = '#E5E8EB')}
-          />
+          <div>
+            <label className="block text-sm font-semibold mb-2" style={{ color: 'var(--text-secondary)' }}>
+              메모 (선택)
+            </label>
+            <input
+              type="text"
+              value={memo}
+              onChange={(e) => setMemo(e.target.value)}
+              placeholder="간단한 메모"
+              className={inputClass}
+              style={{ borderColor: inputBorder }}
+              onFocus={(e) => (e.target.style.borderColor = 'var(--toss-blue)')}
+              onBlur={(e) => (e.target.style.borderColor = inputBorder)}
+            />
+          </div>
         </div>
 
         <div className="flex gap-3">
@@ -162,7 +198,7 @@ export default function ExpenseForm({ categories, onAdd }: ExpenseFormProps) {
           </button>
           <button
             type="button"
-            onClick={() => setShowScanner(true)}
+            onClick={() => scanFileRef.current?.click()}
             className="flex-1 h-14 font-semibold rounded-xl text-base border-2 transition-colors"
             style={{ borderColor: 'var(--toss-blue)', color: 'var(--toss-blue)' }}
             onMouseEnter={(e) => {
@@ -179,11 +215,12 @@ export default function ExpenseForm({ categories, onAdd }: ExpenseFormProps) {
         </div>
       </form>
 
-      {showScanner && (
+      {showScanner && scanImage && (
         <ReceiptScanner
           categories={categories}
           onAdd={onAdd}
-          onClose={() => setShowScanner(false)}
+          onClose={handleScannerClose}
+          initialImage={scanImage}
         />
       )}
     </>

@@ -15,15 +15,14 @@ interface ReceiptScannerProps {
   categories: CategoryConfig[];
   onAdd: (expense: Expense) => void;
   onClose: () => void;
+  initialImage: { base64: string; url: string; mediaType: string };
 }
 
-export default function ReceiptScanner({ categories, onAdd, onClose }: ReceiptScannerProps) {
-  const cameraInputRef = useRef<HTMLInputElement>(null);
-  const galleryInputRef = useRef<HTMLInputElement>(null);
-  const [showChoice, setShowChoice] = useState(true);
-  const [imageUrl, setImageUrl] = useState<string | null>(null);
-  const [imageBase64, setImageBase64] = useState<string | null>(null);
-  const [mediaType, setMediaType] = useState<string>('image/jpeg');
+export default function ReceiptScanner({ categories, onAdd, onClose, initialImage }: ReceiptScannerProps) {
+  const reSelectRef = useRef<HTMLInputElement>(null);
+  const [imageUrl, setImageUrl] = useState<string>(initialImage.url);
+  const [imageBase64, setImageBase64] = useState<string>(initialImage.base64);
+  const [mediaType, setMediaType] = useState<string>(initialImage.mediaType);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [scanResult, setScanResult] = useState<ScanResult | null>(null);
@@ -39,23 +38,25 @@ export default function ReceiptScanner({ categories, onAdd, onClose }: ReceiptSc
   const finalCategory = manualCategory || autoCategory || '기타';
   const matchedConfig = categories.find((c) => c.key === finalCategory);
 
-  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
-    setShowChoice(false);
+  function handleReSelectFile(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
-
-    setError(null);
-    setScanResult(null);
 
     const url = URL.createObjectURL(file);
     setImageUrl(url);
     setMediaType(file.type || 'image/jpeg');
+    setError(null);
+    setScanResult(null);
+    setMerchant('');
+    setAmount('');
+    setDate(getToday());
+    setMemo('');
+    setManualCategory('');
 
     const reader = new FileReader();
     reader.onload = (evt) => {
       const result = evt.target?.result as string;
-      const base64 = result.split(',')[1];
-      setImageBase64(base64);
+      setImageBase64(result.split(',')[1]);
     };
     reader.readAsDataURL(file);
   }
@@ -111,23 +112,13 @@ export default function ReceiptScanner({ categories, onAdd, onClose }: ReceiptSc
     onClose();
   }
 
-  function resetImage() {
-    setImageUrl(null);
-    setImageBase64(null);
-    setError(null);
-    setScanResult(null);
-    setShowChoice(true);
-    if (cameraInputRef.current) cameraInputRef.current.value = '';
-    if (galleryInputRef.current) galleryInputRef.current.value = '';
-  }
-
-  const inputStyle = {
-    borderColor: '#E5E8EB',
-  };
+  const inputStyle = { borderColor: '#E5E8EB' };
+  const inputClass = 'w-full border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2';
 
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50">
-      <div className="bg-white w-full sm:max-w-md sm:rounded-2xl rounded-t-2xl p-6 max-h-[92vh] overflow-y-auto space-y-5">
+      <div className="bg-white w-full sm:max-w-md sm:rounded-2xl rounded-t-2xl p-6 max-h-[92vh] overflow-y-auto space-y-4">
+
         {/* 헤더 */}
         <div className="flex items-center justify-between">
           <h3 className="text-xl font-extrabold" style={{ color: 'var(--text-primary)' }}>
@@ -141,51 +132,17 @@ export default function ReceiptScanner({ categories, onAdd, onClose }: ReceiptSc
           </button>
         </div>
 
-        {/* 숨겨진 파일 입력 */}
+        {/* 다시 선택용 숨겨진 파일 입력 */}
         <input
-          ref={cameraInputRef}
+          ref={reSelectRef}
           type="file"
           accept="image/*"
-          capture="environment"
-          onChange={handleFileChange}
-          className="hidden"
-        />
-        <input
-          ref={galleryInputRef}
-          type="file"
-          accept="image/jpeg,image/png,image/gif,image/webp,image/heic,image/heif"
-          onChange={handleFileChange}
+          onChange={handleReSelectFile}
           className="hidden"
         />
 
-        {/* Step 1: 촬영 or 앨범 선택 */}
-        {!imageUrl && showChoice && (
-          <div className="space-y-3">
-            <button
-              onClick={() => cameraInputRef.current?.click()}
-              className="w-full h-20 border-2 border-dashed border-gray-300 rounded-2xl flex items-center justify-center gap-4 text-gray-500 hover:border-blue-400 hover:text-blue-500 transition-colors"
-            >
-              <span className="text-3xl">📷</span>
-              <div className="text-left">
-                <p className="text-sm font-bold">카메라로 촬영</p>
-                <p className="text-xs text-gray-400">지금 영수증을 찍어요</p>
-              </div>
-            </button>
-            <button
-              onClick={() => galleryInputRef.current?.click()}
-              className="w-full h-20 border-2 border-dashed border-gray-300 rounded-2xl flex items-center justify-center gap-4 text-gray-500 hover:border-blue-400 hover:text-blue-500 transition-colors"
-            >
-              <span className="text-3xl">🖼️</span>
-              <div className="text-left">
-                <p className="text-sm font-bold">사진 보관함</p>
-                <p className="text-xs text-gray-400">팝업에서 '사진 보관함' 선택</p>
-              </div>
-            </button>
-          </div>
-        )}
-
-        {/* Step 2: 미리보기 + 분석 */}
-        {imageUrl && !scanResult && (
+        {/* Step 1: 미리보기 + 분석 */}
+        {!scanResult && (
           <div className="space-y-4">
             <img
               src={imageUrl}
@@ -201,7 +158,7 @@ export default function ReceiptScanner({ categories, onAdd, onClose }: ReceiptSc
 
             <div className="flex gap-3">
               <button
-                onClick={resetImage}
+                onClick={() => reSelectRef.current?.click()}
                 className="flex-1 h-12 border border-gray-200 rounded-xl text-sm font-semibold text-gray-600 hover:bg-gray-50 transition-colors"
               >
                 다시 선택
@@ -228,16 +185,14 @@ export default function ReceiptScanner({ categories, onAdd, onClose }: ReceiptSc
           </div>
         )}
 
-        {/* Step 3: 검토 및 확인 */}
+        {/* Step 2: 검토 및 확인 */}
         {scanResult && (
           <div className="space-y-4">
-            {imageUrl && (
-              <img
-                src={imageUrl}
-                alt="영수증"
-                className="w-full max-h-28 object-contain rounded-xl border border-gray-200"
-              />
-            )}
+            <img
+              src={imageUrl}
+              alt="영수증"
+              className="w-full max-h-28 object-contain rounded-xl border border-gray-200"
+            />
 
             <p className="text-xs font-semibold text-green-700 bg-green-50 rounded-xl px-3 py-2">
               ✓ 분석 완료 — 내용을 확인하고 수정하세요
@@ -252,7 +207,7 @@ export default function ReceiptScanner({ categories, onAdd, onClose }: ReceiptSc
                   type="text"
                   value={merchant}
                   onChange={(e) => setMerchant(e.target.value)}
-                  className="w-full border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2"
+                  className={inputClass}
                   style={inputStyle}
                   onFocus={(e) => (e.target.style.borderColor = 'var(--toss-blue)')}
                   onBlur={(e) => (e.target.style.borderColor = '#E5E8EB')}
@@ -279,7 +234,7 @@ export default function ReceiptScanner({ categories, onAdd, onClose }: ReceiptSc
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
                   min="1"
-                  className="w-full border rounded-xl px-3 py-2.5 text-sm font-bold text-right focus:outline-none focus:ring-2"
+                  className={`${inputClass} font-bold text-right`}
                   style={inputStyle}
                   onFocus={(e) => (e.target.style.borderColor = 'var(--toss-blue)')}
                   onBlur={(e) => (e.target.style.borderColor = '#E5E8EB')}
@@ -294,7 +249,7 @@ export default function ReceiptScanner({ categories, onAdd, onClose }: ReceiptSc
                   type="date"
                   value={date}
                   onChange={(e) => setDate(e.target.value)}
-                  className="w-full border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2"
+                  className={inputClass}
                   style={{ ...inputStyle, boxSizing: 'border-box', maxWidth: '100%' }}
                   onFocus={(e) => (e.target.style.borderColor = 'var(--toss-blue)')}
                   onBlur={(e) => (e.target.style.borderColor = '#E5E8EB')}
@@ -308,7 +263,7 @@ export default function ReceiptScanner({ categories, onAdd, onClose }: ReceiptSc
                 <select
                   value={manualCategory}
                   onChange={(e) => setManualCategory(e.target.value as CategoryKey | '')}
-                  className="w-full border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2"
+                  className={inputClass}
                   style={inputStyle}
                   onFocus={(e) => (e.target.style.borderColor = 'var(--toss-blue)')}
                   onBlur={(e) => (e.target.style.borderColor = '#E5E8EB')}
@@ -330,7 +285,7 @@ export default function ReceiptScanner({ categories, onAdd, onClose }: ReceiptSc
                   type="text"
                   value={memo}
                   onChange={(e) => setMemo(e.target.value)}
-                  className="w-full border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2"
+                  className={inputClass}
                   style={inputStyle}
                   onFocus={(e) => (e.target.style.borderColor = 'var(--toss-blue)')}
                   onBlur={(e) => (e.target.style.borderColor = '#E5E8EB')}

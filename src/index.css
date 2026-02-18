@@ -24,7 +24,7 @@ button, a, input, select {
   transition: all 0.2s ease;
 }
 
-/* iOS Safari: date input 너비 오버플로우 방지 */
+/* iOS Safari: date input 너비 오버플로우 및 세로 정렬 */
 input[type="date"] {
   -webkit-appearance: none;
   appearance: none;
@@ -33,4 +33,5 @@ input[type="date"] {
   max-width: 100%;
   box-sizing: border-box;
   display: block;
+  line-height: normal;
 }
