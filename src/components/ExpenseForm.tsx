@@ -97,7 +97,7 @@ export default function ExpenseForm({ categories, onAdd }: ExpenseFormProps) {
             />
           </div>
 
-          <div>
+          <div className="w-full overflow-hidden">
             <label className="block text-sm font-semibold mb-2" style={{ color: 'var(--text-secondary)' }}>
               날짜
             </label>
@@ -106,7 +106,7 @@ export default function ExpenseForm({ categories, onAdd }: ExpenseFormProps) {
               value={date}
               onChange={(e) => setDate(e.target.value)}
               className="w-full h-12 border rounded-xl px-4 text-sm focus:outline-none focus:ring-2"
-              style={{ borderColor: '#E5E8EB' }}
+              style={{ borderColor: '#E5E8EB', boxSizing: 'border-box', maxWidth: '100%' }}
               onFocus={(e) => (e.target.style.borderColor = 'var(--toss-blue)')}
               onBlur={(e) => (e.target.style.borderColor = '#E5E8EB')}
             />

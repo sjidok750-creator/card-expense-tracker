@@ -177,8 +177,8 @@ export default function ReceiptScanner({ categories, onAdd, onClose }: ReceiptSc
             >
               <span className="text-3xl">🖼️</span>
               <div className="text-left">
-                <p className="text-sm font-bold">앨범에서 선택</p>
-                <p className="text-xs text-gray-400">저장된 사진을 불러와요</p>
+                <p className="text-sm font-bold">사진 보관함</p>
+                <p className="text-xs text-gray-400">팝업에서 '사진 보관함' 선택</p>
               </div>
             </button>
           </div>
@@ -295,7 +295,7 @@ export default function ReceiptScanner({ categories, onAdd, onClose }: ReceiptSc
                   value={date}
                   onChange={(e) => setDate(e.target.value)}
                   className="w-full border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2"
-                  style={inputStyle}
+                  style={{ ...inputStyle, boxSizing: 'border-box', maxWidth: '100%' }}
                   onFocus={(e) => (e.target.style.borderColor = 'var(--toss-blue)')}
                   onBlur={(e) => (e.target.style.borderColor = '#E5E8EB')}
                 />
