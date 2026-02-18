@@ -50,8 +50,8 @@ export default function ExpenseForm({ categories, onAdd }: ExpenseFormProps) {
           지출 입력
         </h2>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="min-w-0">
+        <div className="space-y-4">
+          <div>
             <label className="block text-sm font-semibold mb-2" style={{ color: 'var(--text-secondary)' }}>
               사용처
             </label>
@@ -60,7 +60,7 @@ export default function ExpenseForm({ categories, onAdd }: ExpenseFormProps) {
               value={merchant}
               onChange={(e) => setMerchant(e.target.value)}
               placeholder="예: 스타벅스 강남점"
-              className="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2"
+              className="w-full border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2"
               style={{ borderColor: '#E5E8EB' }}
               onFocus={(e) => (e.target.style.borderColor = 'var(--toss-blue)')}
               onBlur={(e) => (e.target.style.borderColor = '#E5E8EB')}
@@ -79,7 +79,7 @@ export default function ExpenseForm({ categories, onAdd }: ExpenseFormProps) {
             )}
           </div>
 
-          <div className="min-w-0">
+          <div>
             <label className="block text-sm font-semibold mb-2" style={{ color: 'var(--text-secondary)' }}>
               금액 (원)
             </label>
@@ -89,7 +89,7 @@ export default function ExpenseForm({ categories, onAdd }: ExpenseFormProps) {
               onChange={(e) => setAmount(e.target.value)}
               placeholder="0"
               min="1"
-              className="w-full border border-gray-300 rounded-xl px-4 py-3 text-lg font-bold text-right focus:outline-none focus:ring-2"
+              className="w-full border rounded-xl px-4 py-3 text-sm font-bold text-right focus:outline-none focus:ring-2"
               style={{ borderColor: '#E5E8EB', color: 'var(--text-primary)' }}
               onFocus={(e) => (e.target.style.borderColor = 'var(--toss-blue)')}
               onBlur={(e) => (e.target.style.borderColor = '#E5E8EB')}
@@ -97,7 +97,7 @@ export default function ExpenseForm({ categories, onAdd }: ExpenseFormProps) {
             />
           </div>
 
-          <div className="min-w-0">
+          <div>
             <label className="block text-sm font-semibold mb-2" style={{ color: 'var(--text-secondary)' }}>
               날짜
             </label>
@@ -105,21 +105,21 @@ export default function ExpenseForm({ categories, onAdd }: ExpenseFormProps) {
               type="date"
               value={date}
               onChange={(e) => setDate(e.target.value)}
-              className="w-full min-w-0 border border-gray-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2"
+              className="w-full border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2"
               style={{ borderColor: '#E5E8EB' }}
               onFocus={(e) => (e.target.style.borderColor = 'var(--toss-blue)')}
               onBlur={(e) => (e.target.style.borderColor = '#E5E8EB')}
             />
           </div>
 
-          <div className="min-w-0">
+          <div>
             <label className="block text-sm font-semibold mb-2" style={{ color: 'var(--text-secondary)' }}>
               카테고리 (수동 선택)
             </label>
             <select
               value={manualCategory}
               onChange={(e) => setManualCategory(e.target.value as CategoryKey | '')}
-              className="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2"
+              className="w-full border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2"
               style={{ borderColor: '#E5E8EB' }}
               onFocus={(e) => (e.target.style.borderColor = 'var(--toss-blue)')}
               onBlur={(e) => (e.target.style.borderColor = '#E5E8EB')}
