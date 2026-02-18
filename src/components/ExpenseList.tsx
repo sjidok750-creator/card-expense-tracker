@@ -37,24 +37,24 @@ export default function ExpenseList({
   }
 
   return (
-    <div className="bg-white rounded-2xl p-6 mt-6">
-      <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
-        <div className="flex items-center gap-4">
-          <h2 className="text-2xl font-extrabold" style={{ color: 'var(--text-primary)' }}>
+    <div className="bg-white rounded-2xl p-4 mt-4">
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+        <div className="flex items-center gap-3">
+          <h2 className="text-xl font-extrabold" style={{ color: 'var(--text-primary)' }}>
             지출 목록
           </h2>
           <MonthPicker value={month} onChange={onMonthChange} />
         </div>
-        <div className="flex flex-col sm:flex-row items-end sm:items-center gap-3">
+        <div className="flex flex-col sm:flex-row items-end sm:items-center gap-2">
           <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>
-            합계: <span className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>{formatAmount(total)}</span>
+            합계: <span className="text-xl font-bold" style={{ color: 'var(--text-primary)' }}>{formatAmount(total)}</span>
             {' '}({filtered.length}건)
           </span>
           {filtered.length > 0 && (
             <div className="flex gap-2">
               <button
                 onClick={handleExportCSV}
-                className="px-4 py-2 rounded-xl font-semibold text-sm transition-colors"
+                className="px-3 py-1.5 rounded-lg font-semibold text-xs transition-colors"
                 style={{
                   backgroundColor: 'var(--bg-secondary)',
                   color: 'var(--text-secondary)'
@@ -66,7 +66,7 @@ export default function ExpenseList({
               </button>
               <button
                 onClick={handleExportExcel}
-                className="px-4 py-2 text-white rounded-xl font-semibold text-sm transition-colors"
+                className="px-3 py-1.5 text-white rounded-lg font-semibold text-xs transition-colors"
                 style={{ backgroundColor: 'var(--toss-blue)' }}
                 onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#2968CC')}
                 onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'var(--toss-blue)')}
@@ -79,7 +79,7 @@ export default function ExpenseList({
       </div>
 
       {filtered.length === 0 ? (
-        <p className="text-center py-12 text-sm" style={{ color: 'var(--text-tertiary)' }}>
+        <p className="text-center py-8 text-sm" style={{ color: 'var(--text-tertiary)' }}>
           이 달의 지출 내역이 없습니다.
         </p>
       ) : (
@@ -89,11 +89,11 @@ export default function ExpenseList({
             <table className="w-full">
               <thead>
                 <tr className="border-b" style={{ borderColor: '#F2F4F6' }}>
-                  <th className="text-left py-3 px-3 text-xs font-semibold uppercase" style={{ color: 'var(--text-tertiary)' }}>날짜</th>
-                  <th className="text-left py-3 px-3 text-xs font-semibold uppercase" style={{ color: 'var(--text-tertiary)' }}>사용처</th>
-                  <th className="text-right py-3 px-3 text-xs font-semibold uppercase" style={{ color: 'var(--text-tertiary)' }}>금액</th>
-                  <th className="text-left py-3 px-3 text-xs font-semibold uppercase" style={{ color: 'var(--text-tertiary)' }}>카테고리</th>
-                  <th className="py-3 px-3 text-xs font-semibold uppercase w-20" style={{ color: 'var(--text-tertiary)' }}></th>
+                  <th className="text-left py-2 px-2 text-xs font-semibold uppercase" style={{ color: 'var(--text-tertiary)' }}>날짜</th>
+                  <th className="text-left py-2 px-2 text-xs font-semibold uppercase" style={{ color: 'var(--text-tertiary)' }}>사용처</th>
+                  <th className="text-right py-2 px-2 text-xs font-semibold uppercase" style={{ color: 'var(--text-tertiary)' }}>금액</th>
+                  <th className="text-left py-2 px-2 text-xs font-semibold uppercase" style={{ color: 'var(--text-tertiary)' }}>카테고리</th>
+                  <th className="py-2 px-2 text-xs font-semibold uppercase w-20" style={{ color: 'var(--text-tertiary)' }}></th>
                 </tr>
               </thead>
               <tbody>
@@ -112,7 +112,7 @@ export default function ExpenseList({
           </div>
 
           {/* 모바일: 카드 형태 */}
-          <div className="md:hidden space-y-3">
+          <div className="md:hidden space-y-2">
             {filtered.map((e) => (
               <ExpenseRow
                 key={e.id}

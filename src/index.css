@@ -14,7 +14,9 @@ body {
   min-height: 100vh;
   background-color: #F2F4F6;
   color: #191F28;
-  font-family: system-ui, -apple-system, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui, sans-serif;
+  line-height: 1.4;
+  letter-spacing: -0.01em;
 }
 
 /* Smooth transitions for all interactive elements */
