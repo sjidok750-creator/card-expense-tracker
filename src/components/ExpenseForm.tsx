@@ -45,13 +45,13 @@ export default function ExpenseForm({ categories, onAdd }: ExpenseFormProps) {
 
   return (
     <>
-      <form onSubmit={handleSubmit} className="bg-white rounded-2xl p-6 space-y-5">
+      <form onSubmit={handleSubmit} className="bg-white rounded-2xl p-4 space-y-4">
         <h2 className="text-2xl font-extrabold" style={{ color: 'var(--text-primary)' }}>
           지출 입력
         </h2>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-          <div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="min-w-0">
             <label className="block text-sm font-semibold mb-2" style={{ color: 'var(--text-secondary)' }}>
               사용처
             </label>
@@ -79,7 +79,7 @@ export default function ExpenseForm({ categories, onAdd }: ExpenseFormProps) {
             )}
           </div>
 
-          <div>
+          <div className="min-w-0">
             <label className="block text-sm font-semibold mb-2" style={{ color: 'var(--text-secondary)' }}>
               금액 (원)
             </label>
@@ -97,7 +97,7 @@ export default function ExpenseForm({ categories, onAdd }: ExpenseFormProps) {
             />
           </div>
 
-          <div>
+          <div className="min-w-0">
             <label className="block text-sm font-semibold mb-2" style={{ color: 'var(--text-secondary)' }}>
               날짜
             </label>
@@ -105,14 +105,14 @@ export default function ExpenseForm({ categories, onAdd }: ExpenseFormProps) {
               type="date"
               value={date}
               onChange={(e) => setDate(e.target.value)}
-              className="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2"
+              className="w-full min-w-0 border border-gray-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2"
               style={{ borderColor: '#E5E8EB' }}
               onFocus={(e) => (e.target.style.borderColor = 'var(--toss-blue)')}
               onBlur={(e) => (e.target.style.borderColor = '#E5E8EB')}
             />
           </div>
 
-          <div>
+          <div className="min-w-0">
             <label className="block text-sm font-semibold mb-2" style={{ color: 'var(--text-secondary)' }}>
               카테고리 (수동 선택)
             </label>

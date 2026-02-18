@@ -18,7 +18,9 @@ interface ReceiptScannerProps {
 }
 
 export default function ReceiptScanner({ categories, onAdd, onClose }: ReceiptScannerProps) {
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
+  const galleryInputRef = useRef<HTMLInputElement>(null);
+  const [showChoice, setShowChoice] = useState(true);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [imageBase64, setImageBase64] = useState<string | null>(null);
   const [mediaType, setMediaType] = useState<string>('image/jpeg');
@@ -38,6 +40,7 @@ export default function ReceiptScanner({ categories, onAdd, onClose }: ReceiptSc
   const matchedConfig = categories.find((c) => c.key === finalCategory);
 
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    setShowChoice(false);
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -113,8 +116,9 @@ export default function ReceiptScanner({ categories, onAdd, onClose }: ReceiptSc
     setImageBase64(null);
     setError(null);
     setScanResult(null);
-    // 같은 파일 재선택 가능하도록 초기화
-    if (fileInputRef.current) fileInputRef.current.value = '';
+    setShowChoice(true);
+    if (cameraInputRef.current) cameraInputRef.current.value = '';
+    if (galleryInputRef.current) galleryInputRef.current.value = '';
   }
 
   const inputStyle = {
@@ -137,25 +141,44 @@ export default function ReceiptScanner({ categories, onAdd, onClose }: ReceiptSc
           </button>
         </div>
 
-        {/* Step 1: 이미지 선택 */}
-        {!imageUrl && (
-          <div>
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              capture="environment"
-              onChange={handleFileChange}
-              className="hidden"
-            />
+        {/* 숨겨진 파일 입력 */}
+        <input
+          ref={cameraInputRef}
+          type="file"
+          accept="image/*"
+          capture="environment"
+          onChange={handleFileChange}
+          className="hidden"
+        />
+        <input
+          ref={galleryInputRef}
+          type="file"
+          accept="image/*"
+          onChange={handleFileChange}
+          className="hidden"
+        />
+
+        {/* Step 1: 촬영 or 앨범 선택 */}
+        {!imageUrl && showChoice && (
+          <div className="space-y-3">
             <button
-              onClick={() => fileInputRef.current?.click()}
-              className="w-full h-44 border-2 border-dashed border-gray-300 rounded-2xl flex flex-col items-center justify-center gap-3 text-gray-400 hover:border-blue-400 hover:text-blue-400 transition-colors"
+              onClick={() => cameraInputRef.current?.click()}
+              className="w-full h-20 border-2 border-dashed border-gray-300 rounded-2xl flex items-center justify-center gap-4 text-gray-500 hover:border-blue-400 hover:text-blue-500 transition-colors"
             >
-              <span className="text-5xl">📷</span>
-              <div className="text-center">
-                <p className="text-sm font-semibold">영수증 촬영 또는 사진 선택</p>
-                <p className="text-xs mt-1 text-gray-300">탭하여 카메라 열기</p>
+              <span className="text-3xl">📷</span>
+              <div className="text-left">
+                <p className="text-sm font-bold">카메라로 촬영</p>
+                <p className="text-xs text-gray-400">지금 영수증을 찍어요</p>
+              </div>
+            </button>
+            <button
+              onClick={() => galleryInputRef.current?.click()}
+              className="w-full h-20 border-2 border-dashed border-gray-300 rounded-2xl flex items-center justify-center gap-4 text-gray-500 hover:border-blue-400 hover:text-blue-500 transition-colors"
+            >
+              <span className="text-3xl">🖼️</span>
+              <div className="text-left">
+                <p className="text-sm font-bold">앨범에서 선택</p>
+                <p className="text-xs text-gray-400">저장된 사진을 불러와요</p>
               </div>
             </button>
           </div>
