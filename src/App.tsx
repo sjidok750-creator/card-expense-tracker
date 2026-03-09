@@ -9,6 +9,7 @@ import ExpenseForm from './components/ExpenseForm';
 import ExpenseList from './components/ExpenseList';
 import Dashboard from './components/Dashboard';
 import CategoryManager from './components/CategoryManager';
+import ApiKeySettings from './components/ApiKeySettings';
 import FileManagerCompact from './components/FileManagerCompact';
 import { UpdatePrompt } from './components/UpdatePrompt';
 import { IOSInstallGuide } from './components/IOSInstallGuide';
@@ -20,6 +21,7 @@ function App() {
     'categories',
     defaultCategories
   );
+  const [apiKey, setApiKey] = useLocalStorage<string>('anthropicApiKey', '');
 
   const {
     expenses,
@@ -50,7 +52,7 @@ function App() {
       <Layout activeTab={activeTab} onTabChange={setActiveTab}>
         {activeTab === 'input' && (
           <>
-            <ExpenseForm categories={categories} onAdd={addExpense} />
+            <ExpenseForm categories={categories} onAdd={addExpense} apiKey={apiKey} />
             <ExpenseList
               expenses={expenses}
               month={month}
@@ -79,11 +81,14 @@ function App() {
         )}
 
         {activeTab === 'settings' && (
-          <CategoryManager
-            categories={categories}
-            onUpdate={setCategories}
-            onReset={resetCategories}
-          />
+          <>
+            <ApiKeySettings apiKey={apiKey} onSave={setApiKey} />
+            <CategoryManager
+              categories={categories}
+              onUpdate={setCategories}
+              onReset={resetCategories}
+            />
+          </>
         )}
       </Layout>
 

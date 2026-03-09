@@ -16,9 +16,10 @@ interface ReceiptScannerProps {
   onAdd: (expense: Expense) => void;
   onClose: () => void;
   initialImage: { base64: string; url: string; mediaType: string };
+  apiKey: string;
 }
 
-export default function ReceiptScanner({ categories, onAdd, onClose, initialImage }: ReceiptScannerProps) {
+export default function ReceiptScanner({ categories, onAdd, onClose, initialImage, apiKey }: ReceiptScannerProps) {
   const reSelectRef = useRef<HTMLInputElement>(null);
   const [imageUrl, setImageUrl] = useState<string>(initialImage.url);
   const [imageBase64, setImageBase64] = useState<string>(initialImage.base64);
@@ -63,24 +64,58 @@ export default function ReceiptScanner({ categories, onAdd, onClose, initialImag
 
   async function handleAnalyze() {
     if (!imageBase64) return;
+
+    if (!apiKey) {
+      setError('설정 탭에서 Anthropic API 키를 먼저 입력해주세요.');
+      return;
+    }
+
     setLoading(true);
     setError(null);
 
+    const today = new Date().toISOString().split('T')[0];
+
     try {
-      const res = await fetch('/.netlify/functions/analyze-receipt', {
+      const res = await fetch('https://api.anthropic.com/v1/messages', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ imageBase64, mediaType }),
+        headers: {
+          'x-api-key': apiKey,
+          'anthropic-version': '2023-06-01',
+          'content-type': 'application/json',
+          'anthropic-dangerous-direct-browser-access': 'true',
+        },
+        body: JSON.stringify({
+          model: 'claude-haiku-4-5-20251001',
+          max_tokens: 512,
+          messages: [
+            {
+              role: 'user',
+              content: [
+                {
+                  type: 'image',
+                  source: { type: 'base64', media_type: mediaType, data: imageBase64 },
+                },
+                {
+                  type: 'text',
+                  text: `이 영수증 이미지를 분석해서 아래 JSON 형식으로만 답변하세요. 다른 텍스트는 절대 포함하지 마세요.\n\n{"merchant":"상호명","amount":최종결제금액숫자,"date":"YYYY-MM-DD","memo":"특이사항 또는 null"}\n\n오늘 날짜: ${today}\n날짜를 찾을 수 없으면 오늘 날짜를 사용하세요.\n금액은 총 결제 금액 기준으로 숫자만 반환하세요.`,
+                },
+              ],
+            },
+          ],
+        }),
       });
 
-      if (!res.ok) throw new Error('분석 실패');
-
-      const data = await res.json() as ScanResult;
-
-      if (data.error) {
-        setError(data.error);
-        return;
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({})) as { error?: { message?: string } };
+        throw new Error(errData.error?.message ?? '분석 실패');
       }
+
+      const raw = await res.json() as { content: { text: string }[] };
+      const text = raw.content[0].text.trim();
+      const jsonMatch = text.match(/\{[\s\S]*\}/);
+      if (!jsonMatch) throw new Error('영수증을 인식하지 못했습니다.');
+
+      const data = JSON.parse(jsonMatch[0]) as ScanResult;
 
       setScanResult(data);
       setMerchant(data.merchant ?? '');
@@ -88,8 +123,8 @@ export default function ReceiptScanner({ categories, onAdd, onClose, initialImag
       setDate(data.date ?? getToday());
       setMemo(data.memo ?? '');
       setManualCategory('');
-    } catch {
-      setError('영수증 분석에 실패했습니다. 다시 시도해주세요.');
+    } catch (e) {
+      setError(e instanceof Error ? e.message : '영수증 분석에 실패했습니다. 다시 시도해주세요.');
     } finally {
       setLoading(false);
     }
