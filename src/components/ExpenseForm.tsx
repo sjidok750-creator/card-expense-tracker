@@ -2,6 +2,7 @@ import { useRef, useState } from 'react';
 import type { CategoryConfig, CategoryKey, Expense } from '../types';
 import { categorize } from '../utils/categorize';
 import { getToday } from '../utils/format';
+import { compressImage } from '../utils/fileOperations';
 import ReceiptScanner from './ReceiptScanner';
 
 interface ExpenseFormProps {
@@ -49,17 +50,14 @@ export default function ExpenseForm({ categories, onAdd, apiKey }: ExpenseFormPr
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const url = URL.createObjectURL(file);
-    const mt = file.type || 'image/jpeg';
-
-    const reader = new FileReader();
-    reader.onload = (evt) => {
-      const result = evt.target?.result as string;
-      const base64 = result.split(',')[1];
-      setScanImage({ base64, url, mediaType: mt });
-      setShowScanner(true);
-    };
-    reader.readAsDataURL(file);
+    compressImage(file)
+      .then((compressed) => {
+        setScanImage(compressed);
+        setShowScanner(true);
+      })
+      .catch((err: Error) => {
+        alert(err.message);
+      });
   }
 
   function handleScannerClose() {

@@ -2,6 +2,7 @@ import { useRef, useState } from 'react';
 import type { CategoryConfig, CategoryKey, Expense } from '../types';
 import { categorize } from '../utils/categorize';
 import { getToday } from '../utils/format';
+import { compressImage } from '../utils/fileOperations';
 
 interface ScanResult {
   merchant: string | null;
@@ -43,23 +44,22 @@ export default function ReceiptScanner({ categories, onAdd, onClose, initialImag
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const url = URL.createObjectURL(file);
-    setImageUrl(url);
-    setMediaType(file.type || 'image/jpeg');
-    setError(null);
-    setScanResult(null);
-    setMerchant('');
-    setAmount('');
-    setDate(getToday());
-    setMemo('');
-    setManualCategory('');
-
-    const reader = new FileReader();
-    reader.onload = (evt) => {
-      const result = evt.target?.result as string;
-      setImageBase64(result.split(',')[1]);
-    };
-    reader.readAsDataURL(file);
+    compressImage(file)
+      .then((compressed) => {
+        setImageUrl(compressed.url);
+        setImageBase64(compressed.base64);
+        setMediaType(compressed.mediaType);
+        setError(null);
+        setScanResult(null);
+        setMerchant('');
+        setAmount('');
+        setDate(getToday());
+        setMemo('');
+        setManualCategory('');
+      })
+      .catch((err: Error) => {
+        setError(err.message);
+      });
   }
 
   async function handleAnalyze() {
