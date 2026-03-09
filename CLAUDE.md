@@ -246,12 +246,28 @@ All data is stored in `localStorage` under two keys:
 
 ## Deployment
 
-Deployed on Netlify. All pushes to the connected GitHub branch trigger automatic deploys.
+### GitHub Pages (primary)
+
+Deployed via GitHub Actions on every push to `master`.
+
+- **URL:** `https://sjidok750-creator.github.io/card-expense-tracker/`
+- **Workflow:** `.github/workflows/deploy.yml`
+- **Vite base:** `'/card-expense-tracker/'` (set in `vite.config.ts`)
+- Build: `npm ci && npm run build` → publishes `dist/`
+
+To enable GitHub Pages on the repo: **Settings → Pages → Source: GitHub Actions**
+
+> **Receipt scanning is unavailable on GitHub Pages.** The feature relies on a Netlify serverless function (`netlify/functions/analyze-receipt.ts`) which cannot run on a static host.
+
+### Netlify (alternative)
 
 - Build command: `npm run build`
 - Publish directory: `dist`
 - Functions directory: `netlify/functions`
-- Required env var in Netlify dashboard: `ANTHROPIC_API_KEY`
-- SPA routing: all requests redirect to `/index.html` (configured in `netlify.toml`)
+- Required env var: `ANTHROPIC_API_KEY`
+- SPA routing: all requests → `/index.html` (configured in `netlify.toml`)
+- Receipt scanning works on Netlify.
 
-See `DEPLOYMENT_GUIDE.md` for step-by-step setup instructions.
+> **If switching back to Netlify**, revert `base` in `vite.config.ts` to `'/'` and update the PWA `scope`/`start_url` accordingly.
+
+See `DEPLOYMENT_GUIDE.md` for Netlify setup instructions.
