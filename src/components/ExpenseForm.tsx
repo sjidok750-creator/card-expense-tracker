@@ -7,9 +7,10 @@ import ReceiptScanner from './ReceiptScanner';
 interface ExpenseFormProps {
   categories: CategoryConfig[];
   onAdd: (expense: Expense) => void;
+  apiKey: string;
 }
 
-export default function ExpenseForm({ categories, onAdd }: ExpenseFormProps) {
+export default function ExpenseForm({ categories, onAdd, apiKey }: ExpenseFormProps) {
   const [merchant, setMerchant] = useState('');
   const [amount, setAmount] = useState('');
   const [date, setDate] = useState(getToday());
@@ -221,6 +222,7 @@ export default function ExpenseForm({ categories, onAdd }: ExpenseFormProps) {
           onAdd={onAdd}
           onClose={handleScannerClose}
           initialImage={scanImage}
+          apiKey={apiKey}
         />
       )}
     </>
