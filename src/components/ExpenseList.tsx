@@ -1,9 +1,7 @@
 import type { CategoryConfig, Expense } from '../types';
 import { formatAmount } from '../utils/format';
-import { exportCSV } from '../utils/csv';
 import { exportToExcel } from '../utils/excel';
 import ExpenseRow from './ExpenseRow';
-import MonthPicker from './MonthPicker';
 
 interface ExpenseListProps {
   expenses: Expense[];
@@ -12,6 +10,17 @@ interface ExpenseListProps {
   categories: CategoryConfig[];
   onUpdate: (id: string, updates: Partial<Expense>) => void;
   onDelete: (id: string) => void;
+}
+
+const MONO: React.CSSProperties = {
+  fontFamily: "'JetBrains Mono', monospace",
+  fontWeight: 400,
+};
+
+function shiftMonth(value: string, delta: number): string {
+  const [y, m] = value.split('-').map(Number);
+  const d = new Date(y, m - 1 + delta, 1);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
 }
 
 export default function ExpenseList({
@@ -28,72 +37,77 @@ export default function ExpenseList({
 
   const total = filtered.reduce((sum, e) => sum + e.amount, 0);
 
-  function handleExportCSV() {
-    exportCSV(filtered, `지출내역_${month}.csv`);
-  }
+  const [y, mo] = month.split('-');
+  const displayMonth = `${y.slice(2)}/${mo}`;
 
   function handleExportExcel() {
-    exportToExcel(filtered, `지출내역_${month}.xlsx`);
+    exportToExcel(filtered, `expense_${month}.xlsx`);
   }
 
+  const navBtn: React.CSSProperties = {
+    ...MONO,
+    color: '#E8694A',
+    background: 'none',
+    border: 'none',
+    cursor: 'pointer',
+    fontSize: '14px',
+    padding: '0 4px',
+    lineHeight: 1,
+  };
+
+  const monthBadge: React.CSSProperties = {
+    ...MONO,
+    color: '#E8694A',
+    backgroundColor: '#F2F4F6',
+    borderRadius: '6px',
+    padding: '2px 10px',
+    fontSize: '13px',
+    letterSpacing: '0.03em',
+  };
+
+  const totalBadge: React.CSSProperties = {
+    ...MONO,
+    color: '#E8694A',
+    backgroundColor: '#F2F4F6',
+    borderRadius: '6px',
+    padding: '2px 10px',
+    fontSize: '12px',
+  };
+
   return (
-    <div className="bg-white rounded-2xl p-4 mt-4">
-      <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
-        <div className="flex items-center gap-3">
-          <h2 className="text-xl font-extrabold" style={{ color: 'var(--text-primary)' }}>
-            지출 목록
-          </h2>
-          <MonthPicker value={month} onChange={onMonthChange} />
+    <div className="bg-white rounded-2xl p-3 mt-3">
+      {/* Header row: month nav + total */}
+      <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center gap-1">
+          <button style={navBtn} onClick={() => onMonthChange(shiftMonth(month, -1))}>‹</button>
+          <span style={monthBadge}>{displayMonth}</span>
+          <button style={navBtn} onClick={() => onMonthChange(shiftMonth(month, 1))}>›</button>
         </div>
-        <div className="flex flex-col sm:flex-row items-end sm:items-center gap-2">
-          <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>
-            합계: <span className="text-xl font-bold" style={{ color: 'var(--text-primary)' }}>{formatAmount(total)}</span>
-            {' '}({filtered.length}건)
-          </span>
-          {filtered.length > 0 && (
-            <div className="flex gap-2">
-              <button
-                onClick={handleExportCSV}
-                className="px-3 py-1.5 rounded-lg font-semibold text-xs transition-colors"
-                style={{
-                  backgroundColor: 'var(--bg-secondary)',
-                  color: 'var(--text-secondary)'
-                }}
-                onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#E5E8EB')}
-                onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'var(--bg-secondary)')}
-              >
-                CSV 내보내기
-              </button>
-              <button
-                onClick={handleExportExcel}
-                className="px-3 py-1.5 text-white rounded-lg font-semibold text-xs transition-colors"
-                style={{ backgroundColor: 'var(--toss-blue)' }}
-                onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#2968CC')}
-                onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'var(--toss-blue)')}
-              >
-                📊 Excel 내보내기
-              </button>
-            </div>
-          )}
-        </div>
+        <span style={totalBadge}>
+          {formatAmount(total)} · {filtered.length} items
+        </span>
       </div>
 
       {filtered.length === 0 ? (
-        <p className="text-center py-8 text-sm" style={{ color: 'var(--text-tertiary)' }}>
-          이 달의 지출 내역이 없습니다.
+        <p className="text-center py-6 text-xs" style={{ ...MONO, color: '#E8694A', opacity: 0.5 }}>
+          No records for this month.
         </p>
       ) : (
         <>
-          {/* 데스크톱: 테이블 형태 */}
+          {/* Desktop: table */}
           <div className="hidden md:block overflow-x-auto">
             <table className="w-full">
               <thead>
                 <tr className="border-b" style={{ borderColor: '#F2F4F6' }}>
-                  <th className="text-left py-2 px-2 text-xs font-semibold uppercase" style={{ color: 'var(--text-tertiary)' }}>날짜</th>
-                  <th className="text-left py-2 px-2 text-xs font-semibold uppercase" style={{ color: 'var(--text-tertiary)' }}>사용처</th>
-                  <th className="text-right py-2 px-2 text-xs font-semibold uppercase" style={{ color: 'var(--text-tertiary)' }}>금액</th>
-                  <th className="text-left py-2 px-2 text-xs font-semibold uppercase" style={{ color: 'var(--text-tertiary)' }}>카테고리</th>
-                  <th className="py-2 px-2 text-xs font-semibold uppercase w-20" style={{ color: 'var(--text-tertiary)' }}></th>
+                  {['Date', 'Merchant', 'Amt', 'Cat'].map((h, i) => (
+                    <th
+                      key={h}
+                      className={`py-1 px-2 text-xs font-semibold uppercase${i === 2 ? ' text-right' : ' text-left'}`}
+                      style={{ ...MONO, color: '#E8694A', opacity: 0.6 }}
+                    >
+                      {h}
+                    </th>
+                  ))}
                 </tr>
               </thead>
               <tbody>
@@ -111,8 +125,8 @@ export default function ExpenseList({
             </table>
           </div>
 
-          {/* 모바일: 카드 형태 */}
-          <div className="md:hidden space-y-2">
+          {/* Mobile: card */}
+          <div className="md:hidden space-y-1">
             {filtered.map((e) => (
               <ExpenseRow
                 key={e.id}
@@ -123,6 +137,24 @@ export default function ExpenseList({
                 mode="card"
               />
             ))}
+          </div>
+
+          {/* Excel export at bottom */}
+          <div className="mt-3 pt-2 border-t flex justify-end" style={{ borderColor: '#F2F4F6' }}>
+            <button
+              onClick={handleExportExcel}
+              className="px-4 py-1 rounded-md text-xs transition-colors"
+              style={{
+                ...MONO,
+                color: '#E8694A',
+                backgroundColor: '#F2F4F6',
+                border: '1px solid transparent',
+              }}
+              onMouseEnter={(e) => (e.currentTarget.style.border = '1px solid #E8694A')}
+              onMouseLeave={(e) => (e.currentTarget.style.border = '1px solid transparent')}
+            >
+              Export Excel
+            </button>
           </div>
         </>
       )}
