@@ -16,7 +16,6 @@ export default function ExpenseForm({ categories, onAdd, apiKey }: ExpenseFormPr
   const [amount, setAmount] = useState('');
   const [date, setDate] = useState(getToday());
   const [manualCategory, setManualCategory] = useState<CategoryKey | ''>('');
-  const [memo, setMemo] = useState('');
   const [showScanner, setShowScanner] = useState(false);
   const [scanImage, setScanImage] = useState<{ base64: string; url: string; mediaType: string } | null>(null);
   const scanFileRef = useRef<HTMLInputElement>(null);
@@ -36,14 +35,12 @@ export default function ExpenseForm({ categories, onAdd, apiKey }: ExpenseFormPr
       date,
       category: finalCategory,
       manualCategory: manualCategory !== '',
-      memo: memo.trim() || undefined,
     };
 
     onAdd(expense);
     setMerchant('');
     setAmount('');
     setManualCategory('');
-    setMemo('');
   }
 
   function handleScanFileChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -66,12 +63,16 @@ export default function ExpenseForm({ categories, onAdd, apiKey }: ExpenseFormPr
     if (scanFileRef.current) scanFileRef.current.value = '';
   }
 
-  const inputClass = 'w-full border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2';
+  const inputClass = 'w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2';
   const inputBorder = '#E5E8EB';
+  const labelStyle: React.CSSProperties = {
+    color: '#E8694A',
+    fontFamily: "'JetBrains Mono', monospace",
+    fontWeight: 400,
+  };
 
   return (
     <>
-      {/* 스캔용 숨겨진 파일 입력 - 버튼 클릭 시 바로 OS 파일 선택창 트리거 */}
       <input
         ref={scanFileRef}
         type="file"
@@ -80,30 +81,27 @@ export default function ExpenseForm({ categories, onAdd, apiKey }: ExpenseFormPr
         className="hidden"
       />
 
-      <form onSubmit={handleSubmit} className="bg-white rounded-2xl p-4 space-y-4">
-        <h2 className="text-2xl font-extrabold" style={{ color: 'var(--text-primary)' }}>
-          지출 입력
-        </h2>
-
-        <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-semibold mb-2" style={{ color: 'var(--text-secondary)' }}>
-              사용처
+      <form onSubmit={handleSubmit} className="bg-white rounded-2xl p-4">
+        <div className="grid grid-cols-2 gap-x-3 gap-y-2">
+          {/* Merchant */}
+          <div className="col-span-2">
+            <label className="block text-xs font-medium mb-1" style={labelStyle}>
+              Merchant
             </label>
             <input
               type="text"
               value={merchant}
               onChange={(e) => setMerchant(e.target.value)}
-              placeholder="예: 스타벅스 강남점"
+              placeholder="e.g. Starbucks Gangnam"
               className={inputClass}
               style={{ borderColor: inputBorder }}
-              onFocus={(e) => (e.target.style.borderColor = 'var(--toss-blue)')}
+              onFocus={(e) => (e.target.style.borderColor = '#E8694A')}
               onBlur={(e) => (e.target.style.borderColor = inputBorder)}
               required
             />
             {merchant && autoCategory && !manualCategory && (
-              <p className="mt-2 text-xs" style={{ color: 'var(--text-tertiary)' }}>
-                자동 분류:{' '}
+              <p className="mt-1 text-xs" style={{ color: 'var(--text-tertiary)' }}>
+                Auto:{' '}
                 <span
                   className="inline-block px-2 py-0.5 rounded-full text-white text-xs font-semibold"
                   style={{ backgroundColor: matchedConfig?.color }}
@@ -114,9 +112,10 @@ export default function ExpenseForm({ categories, onAdd, apiKey }: ExpenseFormPr
             )}
           </div>
 
+          {/* Amount */}
           <div>
-            <label className="block text-sm font-semibold mb-2" style={{ color: 'var(--text-secondary)' }}>
-              금액 (원)
+            <label className="block text-xs font-medium mb-1" style={labelStyle}>
+              Amount (₩)
             </label>
             <input
               type="number"
@@ -126,15 +125,16 @@ export default function ExpenseForm({ categories, onAdd, apiKey }: ExpenseFormPr
               min="1"
               className={`${inputClass} font-bold text-right`}
               style={{ borderColor: inputBorder, color: 'var(--text-primary)' }}
-              onFocus={(e) => (e.target.style.borderColor = 'var(--toss-blue)')}
+              onFocus={(e) => (e.target.style.borderColor = '#E8694A')}
               onBlur={(e) => (e.target.style.borderColor = inputBorder)}
               required
             />
           </div>
 
+          {/* Date */}
           <div>
-            <label className="block text-sm font-semibold mb-2" style={{ color: 'var(--text-secondary)' }}>
-              날짜
+            <label className="block text-xs font-medium mb-1" style={labelStyle}>
+              Date
             </label>
             <input
               type="date"
@@ -142,24 +142,25 @@ export default function ExpenseForm({ categories, onAdd, apiKey }: ExpenseFormPr
               onChange={(e) => setDate(e.target.value)}
               className={inputClass}
               style={{ borderColor: inputBorder, boxSizing: 'border-box', maxWidth: '100%' }}
-              onFocus={(e) => (e.target.style.borderColor = 'var(--toss-blue)')}
+              onFocus={(e) => (e.target.style.borderColor = '#E8694A')}
               onBlur={(e) => (e.target.style.borderColor = inputBorder)}
             />
           </div>
 
-          <div>
-            <label className="block text-sm font-semibold mb-2" style={{ color: 'var(--text-secondary)' }}>
-              카테고리 (수동 선택)
+          {/* Category */}
+          <div className="col-span-2">
+            <label className="block text-xs font-medium mb-1" style={labelStyle}>
+              Category
             </label>
             <select
               value={manualCategory}
               onChange={(e) => setManualCategory(e.target.value as CategoryKey | '')}
               className={inputClass}
               style={{ borderColor: inputBorder }}
-              onFocus={(e) => (e.target.style.borderColor = 'var(--toss-blue)')}
+              onFocus={(e) => (e.target.style.borderColor = '#E8694A')}
               onBlur={(e) => (e.target.style.borderColor = inputBorder)}
             >
-              <option value="">자동 분류</option>
+              <option value="">Auto-classify</option>
               {categories.map((cat) => (
                 <option key={cat.key} value={cat.key}>
                   {cat.key}
@@ -167,49 +168,42 @@ export default function ExpenseForm({ categories, onAdd, apiKey }: ExpenseFormPr
               ))}
             </select>
           </div>
-
-          <div>
-            <label className="block text-sm font-semibold mb-2" style={{ color: 'var(--text-secondary)' }}>
-              메모 (선택)
-            </label>
-            <input
-              type="text"
-              value={memo}
-              onChange={(e) => setMemo(e.target.value)}
-              placeholder="간단한 메모"
-              className={inputClass}
-              style={{ borderColor: inputBorder }}
-              onFocus={(e) => (e.target.style.borderColor = 'var(--toss-blue)')}
-              onBlur={(e) => (e.target.style.borderColor = inputBorder)}
-            />
-          </div>
         </div>
 
-        <div className="flex gap-3">
+        <div className="flex gap-3 mt-3">
           <button
             type="submit"
-            className="flex-[2] h-14 text-white font-semibold rounded-xl text-base transition-colors"
-            style={{ backgroundColor: 'var(--toss-blue)' }}
-            onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#2968CC')}
-            onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'var(--toss-blue)')}
+            className="flex-1 h-10 text-white font-semibold rounded-lg text-sm transition-colors"
+            style={{
+              backgroundColor: '#E8694A',
+              fontFamily: "'JetBrains Mono', monospace",
+              fontWeight: 400,
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#C9573A')}
+            onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#E8694A')}
           >
-            추가
+            Add
           </button>
           <button
             type="button"
             onClick={() => scanFileRef.current?.click()}
-            className="flex-1 h-14 font-semibold rounded-xl text-base border-2 transition-colors"
-            style={{ borderColor: 'var(--toss-blue)', color: 'var(--toss-blue)' }}
+            className="flex-1 h-10 font-semibold rounded-lg text-sm border-2 transition-colors"
+            style={{
+              borderColor: '#E8694A',
+              color: '#E8694A',
+              fontFamily: "'JetBrains Mono', monospace",
+              fontWeight: 400,
+            }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = 'var(--toss-blue)';
+              e.currentTarget.style.backgroundColor = '#E8694A';
               e.currentTarget.style.color = '#fff';
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.backgroundColor = 'transparent';
-              e.currentTarget.style.color = 'var(--toss-blue)';
+              e.currentTarget.style.color = '#E8694A';
             }}
           >
-            📷 스캔
+            📷 Scan
           </button>
         </div>
       </form>
