@@ -1,5 +1,51 @@
 import type { Expense, CategoryConfig } from '../types';
 
+const MAX_IMAGE_PX = 1920;
+const JPEG_QUALITY = 0.85;
+
+export interface CompressedImage {
+  base64: string;
+  url: string;
+  mediaType: 'image/jpeg';
+}
+
+export function compressImage(file: File): Promise<CompressedImage> {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    const objectUrl = URL.createObjectURL(file);
+
+    img.onload = () => {
+      const { naturalWidth: w, naturalHeight: h } = img;
+      const scale = Math.min(1, MAX_IMAGE_PX / Math.max(w, h));
+      const canvas = document.createElement('canvas');
+      canvas.width = Math.round(w * scale);
+      canvas.height = Math.round(h * scale);
+
+      const ctx = canvas.getContext('2d');
+      if (!ctx) {
+        URL.revokeObjectURL(objectUrl);
+        reject(new Error('Canvas를 사용할 수 없습니다.'));
+        return;
+      }
+
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      URL.revokeObjectURL(objectUrl);
+
+      const dataUrl = canvas.toDataURL('image/jpeg', JPEG_QUALITY);
+      const base64 = dataUrl.split(',')[1];
+      const url = URL.createObjectURL(file); // keep original for preview
+      resolve({ base64, url, mediaType: 'image/jpeg' });
+    };
+
+    img.onerror = () => {
+      URL.revokeObjectURL(objectUrl);
+      reject(new Error('이미지를 불러올 수 없습니다. 지원하지 않는 형식일 수 있습니다.'));
+    };
+
+    img.src = objectUrl;
+  });
+}
+
 export interface AppData {
   expenses: Expense[];
   categories: CategoryConfig[];
