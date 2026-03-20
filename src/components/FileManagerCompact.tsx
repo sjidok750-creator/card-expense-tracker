@@ -39,6 +39,37 @@ function Badge({ children, onClick, danger = false }: {
         padding: '2px 10px',
         cursor: onClick ? 'pointer' : 'default',
         transition: 'all 0.15s ease',
+        whiteSpace: 'nowrap',
+      }}
+    >
+      {children}
+    </button>
+  );
+}
+
+function MenuBadge({ children, onClick, danger = false }: {
+  children: React.ReactNode;
+  onClick?: () => void;
+  danger?: boolean;
+}) {
+  const [hovered, setHovered] = useState(false);
+  return (
+    <button
+      onClick={onClick}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        ...MONO,
+        color: danger ? '#EF4444' : '#191F28',
+        backgroundColor: hovered ? '#E8E8E8' : '#F2F4F6',
+        border: `1px solid ${danger ? (hovered ? '#EF4444' : 'transparent') : (hovered ? '#C0C0C0' : 'transparent')}`,
+        borderRadius: '6px',
+        fontSize: '12px',
+        padding: '1px 8px',
+        lineHeight: '1.4',
+        cursor: 'pointer',
+        transition: 'all 0.15s ease',
+        whiteSpace: 'nowrap',
       }}
     >
       {children}
@@ -130,7 +161,9 @@ export default function FileManagerCompact({
 
       {/* Header row */}
       <div className="flex items-center justify-between">
-        <Badge>File Mgmt</Badge>
+        <span style={{ ...MONO, fontWeight: 700, fontSize: '20px', color: CORAL }}>
+          File Mgmt
+        </span>
         <div className="flex items-center gap-2">
           <Badge onClick={handleSave}>Save</Badge>
           <Badge onClick={handleLoad}>Load</Badge>
@@ -159,9 +192,9 @@ export default function FileManagerCompact({
       {isOpen && (
         <div className="mt-2 pt-2 border-t space-y-2" style={{ borderColor: '#F2F4F6' }}>
           <div className="flex flex-wrap gap-2">
-            <Badge onClick={handleExportExcel}>Export Excel</Badge>
-            <Badge onClick={handleShareExcel}>Share Excel</Badge>
-            <Badge onClick={handleClear} danger>Clear All</Badge>
+            <MenuBadge onClick={handleExportExcel}>Export</MenuBadge>
+            <MenuBadge onClick={handleShareExcel}>Share</MenuBadge>
+            <MenuBadge onClick={handleClear} danger>Clear All</MenuBadge>
           </div>
 
           <div
