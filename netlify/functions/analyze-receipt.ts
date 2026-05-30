@@ -1,13 +1,10 @@
-import Anthropic from '@anthropic-ai/sdk';
-
-const client = new Anthropic();
-
 export const handler = async (event: { httpMethod: string; body: string | null }) => {
   if (event.httpMethod !== 'POST') {
     return { statusCode: 405, body: 'Method Not Allowed' };
   }
 
-  if (!process.env.ANTHROPIC_API_KEY) {
+  const apiKey = process.env.ANTHROPIC_API_KEY;
+  if (!apiKey) {
     return {
       statusCode: 500,
       body: JSON.stringify({ error: 'ANTHROPIC_API_KEY 환경변수가 설정되지 않았습니다.' }),
@@ -31,24 +28,31 @@ export const handler = async (event: { httpMethod: string; body: string | null }
 
   const today = new Date().toISOString().split('T')[0];
 
-  const response = await client.messages.create({
-    model: 'claude-haiku-4-5-20251001',
-    max_tokens: 512,
-    messages: [
-      {
-        role: 'user',
-        content: [
-          {
-            type: 'image',
-            source: {
-              type: 'base64',
-              media_type: mediaType as 'image/jpeg' | 'image/png' | 'image/gif' | 'image/webp',
-              data: imageBase64,
+  const response = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'x-api-key': apiKey,
+      'anthropic-version': '2023-06-01',
+      'content-type': 'application/json',
+    },
+    body: JSON.stringify({
+      model: 'claude-haiku-4-5-20251001',
+      max_tokens: 512,
+      messages: [
+        {
+          role: 'user',
+          content: [
+            {
+              type: 'image',
+              source: {
+                type: 'base64',
+                media_type: mediaType,
+                data: imageBase64,
+              },
             },
-          },
-          {
-            type: 'text',
-            text: `이 영수증 이미지를 분석해서 아래 JSON 형식으로만 답변하세요. 다른 텍스트는 절대 포함하지 마세요.
+            {
+              type: 'text',
+              text: `이 영수증 이미지를 분석해서 아래 JSON 형식으로만 답변하세요. 다른 텍스트는 절대 포함하지 마세요.
 
 {
   "merchant": "상호명 (문자열)",
@@ -60,13 +64,23 @@ export const handler = async (event: { httpMethod: string; body: string | null }
 오늘 날짜: ${today}
 날짜를 찾을 수 없으면 오늘 날짜를 사용하세요.
 금액은 총 결제 금액 기준으로 숫자만 반환하세요.`,
-          },
-        ],
-      },
-    ],
+            },
+          ],
+        },
+      ],
+    }),
   });
 
-  const text = (response.content[0] as { type: string; text: string }).text.trim();
+  if (!response.ok) {
+    const errText = await response.text();
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ error: 'API 호출 실패', detail: errText }),
+    };
+  }
+
+  const data = await response.json() as { content: { text: string }[] };
+  const text = data.content[0].text.trim();
 
   const jsonMatch = text.match(/\{[\s\S]*\}/);
   if (!jsonMatch) {
